@@ -1,0 +1,18 @@
+---
+yum_repo_path : /var/lib/yum/local
+# defaults file for python34
+python34_pkg:
+  - python34
+  - python34-devel
+  - python-pip
+  
+  
+pip_packages_to_install:
+  - requests
+  
+pip_local_dir: ~/ansible/pip_packages_to_install
+
+pip_remote_dir: /tmp/pip_packages_to_install
+
+
+requirement_file : ~/ansible/requirements.txt

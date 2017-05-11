@@ -1,0 +1,48 @@
+---
+# YUM REPO
+- name: Ensure libselinux-python is installed
+  yum:  state=present pkg=libselinux-python
+  when: "ansible_os_family == 'RedHat'"
+  become: yes
+
+- name: Ensure createrepo is installed
+  yum:  state=present pkg=createrepo
+  become: yes
+
+- name: Ensure localrepo directory exist
+  file: state=directory path={{localrepo_path}}
+  become: yes
+
+- name: Force reindex localrepo
+  command: /bin/true
+  notify: reindex localrepo
+- meta: flush_handlers
+
+- name: Ensure localrepo is configured
+  template: dest=/etc/yum.repos.d/local.repo src=local.repo.templ
+  become: yes
+
+# Install Python
+- name: Install Python packages
+  yum: name={{ item }} state=present
+  with_items: "{{ python34_redhat_pkg }}"
+  tags: [packages,python34,python]
+  
+# Issue PIP Command
+
+- name: Copy Pip Packages
+  copy:
+      src: {{pip_local_dir}}
+      dest: {{pip_remote_dir}}
+
+- name: Copy Pip Requirements
+  copy:
+      src: {{requirement_file}}
+      dest: /tmp
+      
+      
+- name: Pip from requirements       
+  pip:
+    chdir: /tmp
+    extra_args: --no-index --find-links file://{{pip_remote_dir}}
+    

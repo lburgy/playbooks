@@ -1,0 +1,4 @@
+---
+- name: reindex localrepo
+  command: createrepo {{yum_repo_path}}
+  become: yes
